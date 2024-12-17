@@ -92,7 +92,7 @@
 	status = "okay";
 
 	panel: panel@0 {
-		compatible = "10or,g-hx8399c-auo";
+		compatible = "10or,g-panel";
 		reg = <0>;
 
 		backlight = <&pmi8950_wled>;
