@@ -1,3 +1,6 @@
+obj-$(CONFIG_DRM_PANEL_10OR_G_HX8399C_AUO) += panel-10or-g-hx8399c-auo.o
+obj-$(CONFIG_DRM_PANEL_10OR_G_ILI7807D_DJN_AUO) += panel-10or-g-ili7807d-djn-auo.o
+obj-$(CONFIG_DRM_PANEL_10OR_G_ILI7807D_DJN) += panel-10or-g-ili7807d-djn.o
 obj-$(CONFIG_DRM_PANEL_ASUS_ZE520KL_ILI7807B_BOE) += panel-asus-ze520kl-ili7807b-boe.o
 obj-$(CONFIG_DRM_PANEL_ASUS_ZE520KL_R63350_TM) += panel-asus-ze520kl-r63350-tm.o
 obj-$(CONFIG_DRM_PANEL_ASUS_ZE552KL_ILI7807B_CTC) += panel-asus-ze552kl-ili7807b-ctc.o
