@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /*
- * Copyright (c) 2025, MarvelMathesh <123v.mathesh@gmail.com>
+ * Copyright (c) 2026, Mathesh Velayudan <123v.mathesh@gmail.com>
  */
 /dts-v1/;
 
 #include "msm8953.dtsi"
 #include "pm8953.dtsi"
 #include "pmi8950.dtsi"
+#include "pmi8950-usb-type-b.dtsi"
 
-/delete-node/ &cont_splash_mem;
 /delete-node/ &qseecom_mem;
 
 / {
-	model = "10or G";
+	model = "10or G (g)";
 	compatible = "10or,g", "qcom,msm8953";
 	chassis-type = "handset";
 	qcom,msm-id = <293 0x0>;
@@ -55,26 +55,28 @@
 	gpio-keys {
 		compatible = "gpio-keys";
 
-		pinctrl-0 = <&gpio_key_default>;
-		pinctrl-names = "default";
-
 		key-volume-up {
-			label = "Volume Up";
-			gpios = <&tlmm 85 GPIO_ACTIVE_LOW>;
+			label = "volume_up";
 			linux,code = <KEY_VOLUMEUP>;
-			debounce-interval = <15>;
+			gpios = <&tlmm 85 GPIO_ACTIVE_LOW>;
 		};
 	};
 
 	reserved-memory {
-		qseecom@0 {
-			reg = <0x00 0x84a00000 0x00 0x1900000>;
+		qseecom_mem: qseecom@84a00000 {
+			reg = <0x0 0x84a00000 0x0 0x1900000>;
 			no-map;
 		};
 
 		cont_splash_mem: cont-splash@90001000 {
 			reg = <0x0 0x90001000 0x0 (1080 * 1920 * 3)>;
 			no-map;
+		};
+
+		ramoops@9ff00000 {
+			compatible = "ramoops";
+			reg = <0x0 0x9ff00000 0x0 0x00100000>;
+			console-size = <0x100000>;
 		};
 	};
 
@@ -86,12 +88,36 @@
 	};
 };
 
+&hsusb_phy {
+	vdd-supply = <&pm8953_l3>;
+	vdda-pll-supply = <&pm8953_l7>;
+	vdda-phy-dpdm-supply = <&pm8953_l13>;
+
+	status = "okay";
+};
+
+&ibb {
+	qcom,discharge-resistor-kohms = <32>;
+};
+
+&lpass {
+	status = "okay";
+};
+
+&mdss {
+	status = "okay";
+};
+
 &mdss_dsi0 {
 	vdda-supply = <&pm8953_s3>;
 	vddio-supply = <&pm8953_l6>;
 
+	pinctrl-0 = <&pmx_mdss_default>;
+	pinctrl-1 = <&pmx_mdss_sleep>;
+	pinctrl-names = "default", "sleep";
+
 	status = "okay";
-	
+
 	panel: panel@0 {
 		compatible = "10or,g-panel";
 		reg = <0>;
@@ -100,12 +126,8 @@
 
 		reset-gpios = <&tlmm 61 GPIO_ACTIVE_LOW>;
 
-		pinctrl-0 = <&pmx_mdss_default>;
-		pinctrl-1 = <&pmx_mdss_sleep>;
-		pinctrl-names = "default", "sleep";
-
-		vsp-supply = <&lab_vreg>;
-		vsn-supply = <&ibb_vreg>;
+		vsp-supply = <&lab>;
+		vsn-supply = <&ibb>;
 
 		port {
 			panel_in: endpoint {
@@ -127,22 +149,6 @@
 	status = "okay";
 };
 
-&hsusb_phy {
-	vdd-supply = <&pm8953_l3>;
-	vdda-pll-supply = <&pm8953_l7>;
-	vdda-phy-dpdm-supply = <&pm8953_l13>;
-
-	status = "okay";
-};
-
-&lpass {
-	status = "okay";
-};
-
-&mdss {
-	status = "okay";
-};
-
 &mpss {
 	pll-supply = <&pm8953_l7>;
 
@@ -151,6 +157,7 @@
 
 &pm8953_resin {
 	linux,code = <KEY_VOLUMEDOWN>;
+	
 	status = "okay";
 };
 
@@ -188,7 +195,6 @@
 &rpm_requests {
 	regulators {
 		compatible = "qcom,rpm-pm8953-regulators";
-
 		vdd_s1-supply = <&vph_pwr>;
 		vdd_s2-supply = <&vph_pwr>;
 		vdd_s3-supply = <&vph_pwr>;
@@ -251,7 +257,7 @@
 
 		pm8953_l8: l8 {
 			regulator-min-microvolt = <2900000>;
-			regulator-max-microvolt = <2900000>;
+			regulator-max-microvolt = <2950000>;
 		};
 
 		pm8953_l9: l9 {
@@ -295,7 +301,7 @@
 		};
 
 		pm8953_l22: l22 {
-			regulator-min-microvolt = <2800000>;
+			regulator-min-microvolt = <2850000>;
 			regulator-max-microvolt = <2850000>;
 		};
 
