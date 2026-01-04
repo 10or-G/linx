@@ -100,6 +100,55 @@
 	qcom,discharge-resistor-kohms = <32>;
 };
 
+&lab {
+	qcom,soft-start-us = <800>;
+};
+
+&i2c_3 {
+	status = "okay";
+
+	ft5406_ts: touchscreen@38 {
+		compatible = "edt,edt-ft5406";
+		reg = <0x38>;
+
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 IRQ_TYPE_EDGE_FALLING>;
+		
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&ts_reset_active &ts_int_active>;
+		pinctrl-1 = <&ts_reset_suspend &ts_int_suspend>;
+
+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_LOW>;
+
+		vcc-supply = <&pm8953_l10>;
+		iovcc-supply = <&pm8953_l6>;
+
+		touchscreen-size-x = <1080>;
+		touchscreen-size-y = <1920>;
+		status = "disabled";
+	};
+
+	gt917d_ts: touchscreen@5d {
+		compatible = "goodix,gt917d";
+		reg = <0x5d>;
+
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 IRQ_TYPE_EDGE_FALLING>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&ts_int_default>;
+
+		reset-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+
+		VDDIO-supply = <&pm8953_l6>;
+		AVDD28-supply = <&pm8953_l10>;
+
+		touchscreen-size-x = <1080>;
+		touchscreen-size-y = <1920>;
+		status = "okay";
+	};
+};
+
 &lpass {
 	status = "okay";
 };
@@ -301,7 +350,7 @@
 		};
 
 		pm8953_l22: l22 {
-			regulator-min-microvolt = <2850000>;
+			regulator-min-microvolt = <2800000>;
 			regulator-max-microvolt = <2850000>;
 		};
 
