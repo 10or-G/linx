@@ -324,6 +324,7 @@ static void msm8953_qdsp6_add_ops(struct snd_soc_card *card)
 static const struct snd_kcontrol_new apq8016_sbc_snd_controls[] = {
 	SOC_DAPM_PIN_SWITCH("Headphone Jack"),
 	SOC_DAPM_PIN_SWITCH("Mic Jack"),
+	SOC_DAPM_PIN_SWITCH("Ext Spk"),
 };
 
 static const struct snd_soc_dapm_widget apq8016_sbc_dapm_widgets[] = {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /*
- * Copyright (c) 2026, Mathesh Velayudan <123v.mathesh@gmail.com>
+ * Copyright (c) 2026, Mathesh V <123v.mathesh@gmail.com>
  */
 /dts-v1/;
 
@@ -86,6 +86,20 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
+
+	speaker_amp1: audio-amplifier1 {
+		compatible = "simple-audio-amplifier";
+		enable-gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
+		sound-name-prefix = "Speaker Amp 1";
+		vcc-supply = <&vph_pwr>;
+	};
+
+	speaker_amp2: audio-amplifier2 {
+		compatible = "simple-audio-amplifier";
+		enable-gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
+		sound-name-prefix = "Speaker Amp 2";
+		vcc-supply = <&vph_pwr>;
+	};
 };
 
 &hsusb_phy {
@@ -98,10 +112,6 @@
 
 &ibb {
 	qcom,discharge-resistor-kohms = <32>;
-};
-
-&lab {
-	qcom,soft-start-us = <800>;
 };
 
 &i2c_3 {
@@ -147,6 +157,10 @@
 		touchscreen-size-y = <1920>;
 		status = "okay";
 	};
+};
+
+&lab {
+	qcom,soft-start-us = <800>;
 };
 
 &lpass {
@@ -381,6 +395,31 @@
 	status = "okay";
 };
 
+&sound_card {
+	model = "10or-g";
+
+	aux-devs = <&speaker_amp1>, <&speaker_amp2>;
+	widgets = "Speaker", "Ext Spk";
+	audio-routing =
+		"AMIC1", "MIC BIAS External1",
+		"AMIC2", "MIC BIAS Internal2",
+		"AMIC3", "MIC BIAS External1",
+		"MM_DL1", "MultiMedia1 Playback",
+		"MM_DL3", "MultiMedia3 Playback",
+		"MM_DL4", "MultiMedia4 Playback",
+		"MultiMedia2 Capture", "MM_UL2",
+		"Speaker Amp 1 INL", "HPH_L",
+		"Speaker Amp 2 INL", "HPH_R",
+		"Ext Spk", "Speaker Amp 1 OUTL",
+		"Ext Spk", "Speaker Amp 2 OUTL";
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&cdc_pdm_lines_act &cdc_pdm_lines_2_act &cdc_pdm_comp_lines_act &tlmm_pri_act &tlmm_pri_ws_default>;
+	pinctrl-1 = <&cdc_pdm_lines_sus &cdc_pdm_lines_2_sus &cdc_pdm_comp_lines_sus &tlmm_pri_sus &tlmm_pri_ws_default>;
+
+	status = "okay";
+};
+
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <135 4>;
 
@@ -440,9 +479,39 @@
 		function = "pri_mi2s_ws";
 		drive-strength = <8>;
 	};
+
+
+
+	tlmm_pri_act: pri-tlmm-active-state {
+		pins = "gpio88", "gpio91", "gpio93";
+		function = "pri_mi2s";
+		drive-strength = <8>;
+		bias-disable;
+	};
+
+	tlmm_pri_sus: pri-tlmm-suspend-state {
+		pins = "gpio88", "gpio91", "gpio93";
+		function = "pri_mi2s";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
 };
 
 &usb3 {
+	status = "okay";
+};
+
+&wcd_codec {
+	qcom,mbhc-vthreshold-high = <73 233 438 438 438>;
+	qcom,mbhc-vthreshold-low = <73 233 438 438 438>;
+	qcom,micbias1-ext-cap;
+	qcom,hphl-jack-type-normally-open;
+	qcom,gnd-jack-type-normally-open;
+
+	vdd-cdc-io-supply = <&pm8953_l5>;
+	vdd-cdc-tx-rx-cx-supply = <&pm8953_s4>;
+	vdd-micbias-supply = <&pm8953_l13>;
+	
 	status = "okay";
 };
 
@@ -459,4 +528,8 @@
 	vddrfa-supply = <&pm8953_l19>;
 	vddpa-supply = <&pm8953_l9>;
 	vdddig-supply = <&pm8953_l5>;
+};
+
+&zap_shader {
+	firmware-name = "qcom/msm8953/10or/g/a506_zap.mdt";
 };
