@@ -92,6 +92,8 @@
 		enable-gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
 		sound-name-prefix = "Speaker Amp 1";
 		vcc-supply = <&vph_pwr>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&spk_amp1_default>;
 	};
 
 	speaker_amp2: audio-amplifier2 {
@@ -99,6 +101,8 @@
 		enable-gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
 		sound-name-prefix = "Speaker Amp 2";
 		vcc-supply = <&vph_pwr>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&spk_amp2_default>;
 	};
 };
 
@@ -480,7 +484,21 @@
 		drive-strength = <8>;
 	};
 
+	spk_amp1_default: spk-amp1-default-state {
+		pins = "gpio20";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+		output-low;
+	};
 
+	spk_amp2_default: spk-amp2-default-state {
+		pins = "gpio21";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+		output-low;
+	};
 
 	tlmm_pri_act: pri-tlmm-active-state {
 		pins = "gpio88", "gpio91", "gpio93";
