@@ -373,7 +373,7 @@
 		};
 
 		pm8953_l23: l23 {
-			regulator-min-microvolt = <975000>;
+			regulator-min-microvolt = <1050000>;
 			regulator-max-microvolt = <1225000>;
 		};
 	};
@@ -512,6 +512,101 @@
 		function = "pri_mi2s";
 		drive-strength = <2>;
 		bias-pull-down;
+	};
+
+	cam_sensor_rear_default: cam-sensor-rear-default-state {
+		pins = "gpio40", "gpio39";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	cam_sensor_rear2_default: cam-sensor-rear2-default-state {
+		pins = "gpio129", "gpio130";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	cam_sensor_front_default: cam-sensor-front-default-state {
+		pins = "gpio131";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	cam_sensor_front_stby_default: cam-sensor-front-stby-default-state {
+		pins = "gpio132";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+		output-high;
+	};
+};
+
+&camss {
+	status = "okay";
+	vdda-supply = <&pm8953_s3>;
+
+	ports {
+		port@2 {
+			reg = <2>;
+			csiphy2_ep: endpoint {
+				clock-lanes = <7>;
+				data-lanes = <0 1 2 3>;
+				remote-endpoint = <&front_cam_ep>;
+			};
+		};
+	};
+};
+
+&cci {
+	pinctrl-names = "default";
+	pinctrl-0 = <&cci0_default>,
+		    <&cci1_default>,
+		    <&camss_mclk0_default>,
+		    <&camss_mclk1_default>,
+		    <&camss_mclk2_default>;
+
+	status = "okay";
+};
+
+
+
+&cci_i2c1 {
+	/* Rear Primary Camera - OV13855 (13MP) */
+	/* Connected to CSIPHY0, MCLK0 (gpio26) */
+	/* Missing mainline driver for OV13855 */
+
+	/* Front Camera - S5K3P8SP (16MP) */
+	camera-sensor@2d {
+		compatible = "samsung,s5k3p8sp";
+		reg = <0x2d>;
+
+		clocks = <&gcc GCC_CAMSS_MCLK1_CLK>;
+		clock-frequency = <24000000>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&cam_sensor_front_default>, <&cam_sensor_front_stby_default>;
+
+		reset-gpios = <&tlmm 131 GPIO_ACTIVE_LOW>;
+		/* Standby managed by driver or shared default state usually */
+
+		avdd-supply = <&pm8953_l22>;
+		dvdd-supply = <&pm8953_l23>;
+		vio-supply = <&pm8953_l6>;
+
+		rotation = <270>;
+		orientation = <0>;
+
+		status = "okay";
+
+		port {
+			front_cam_ep: endpoint {
+				data-lanes = <0 1 2 3>;
+				remote-endpoint = <&csiphy2_ep>;
+			};
+		};
 	};
 };
 
